@@ -1,0 +1,9 @@
+---
+# tasks file for common
+
+-   name: Install common apps
+    apt:
+        update_cache: yes
+        state: present
+        name: "{{ apt_packages }}"
+    become: yes

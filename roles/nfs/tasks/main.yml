@@ -1,0 +1,33 @@
+---
+# tasks file for nfs
+
+-   name: Create directory to be shared
+    file:
+        path: "{{ nfs_share_directory }}"
+        state: directory
+        mode: 777
+        owner: root
+        group: root
+
+-   name: Ensure NFS tools are installed
+    apt:
+        update_cache: yes
+        state: present
+        name: nfs-kernel-server
+    become: true
+
+-   name: Manage exports
+    template:
+        src: exports.j2
+        dest: /etc/exports
+        owner: root
+        group: root
+        mode: 0644
+    become: true
+
+-   name: Restart NFS server
+    service:
+        name: nfs-kernel-server
+        state: restarted
+    become: true
+        

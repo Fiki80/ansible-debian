@@ -1,0 +1,94 @@
+version: "3"
+
+services:
+    oscam:
+        image: linuxserver/oscam
+        container_name: oscam
+        hostname: oscam
+        networks:
+            - proxy0
+        environment:
+            - PUID=${PUID}
+            - PGID=${PGID}
+            - TZ=${TZ}
+        volumes:
+            - ${CONFIG}/oscam:/config
+        ports:
+            - "8888:8888"
+        restart: unless-stopped
+
+    nzbget:
+        image: linuxserver/nzbget
+        container_name: nzbget
+        hostname: nzbget
+        networks:
+            - proxy0
+        environment:
+            - PUID=${PUID}
+            - PGID=${PGID}
+            - TZ=${TZ}
+        volumes:
+            - ${CONFIG}/nzbget:/config
+            - ${DOWNLOADS}:/downloads
+        ports:
+            - "6789:6789"
+        restart: unless-stopped
+        
+    nzbhydra:
+        image: linuxserver/hydra2
+        container_name: nzbhydra
+        hostname: nzbhydra
+        networks:
+            - proxy0
+        environment:
+            - PUID=${PUID}
+            - PGID=${PGID}
+            - TZ=${TZ}
+        volumes:
+            - ${CONFIG}/nzbhydra:/config
+            - ${DOWNLOADS}/complete:/downloads
+        ports:
+            - "5076:5076"
+        restart: unless-stopped
+    
+    sonarr:
+        image: linuxserver/sonarr
+        container_name: sonarr
+        hostname: sonarr
+        networks:
+            - proxy0
+        environment:
+            - PUID=${PUID}
+            - PGID=${PGID}
+            - TZ=${TZ}
+        volumes:
+            - ${CONFIG}/sonarr:/config
+            - ${DOWNLOADS}/complete:/downloads
+            - ${DATA}/tv:/tv
+        ports:
+            - "8989:8989"
+        restart: unless-stopped
+
+    mariadb:
+        image: linuxserver/mariadb
+        container_name: mariadb
+        hostname: mariadb
+        networks:
+            - proxy0
+        environment:
+            - PUID=${PUID}
+            - PGID=${PGID}
+            - MYSQL_ROOT_PASSWORD=${DB_PASS}
+            - TZ=${TZ}
+        volumes:
+            - ${CONFIG}/mariadb:/config
+        ports:
+            - "3306:3306"
+        restart: unless-stopped
+
+networks:
+    proxy0:
+        ipam:
+            driver: default
+            config:
+                - subnet: "172.16.238.0/24"

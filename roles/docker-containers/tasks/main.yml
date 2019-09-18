@@ -1,0 +1,33 @@
+---
+# tasks file for docker-containers
+
+-   name: Get UID of the user
+    shell: id -u
+    register: user_id
+
+-   name: Get GID of the user
+    shell: id -g
+    register: user_gid
+
+-   name: Get $HOME of the user
+    shell: echo $HOME
+    register: home_dir
+
+-   name: Get timezone
+    shell: cat /etc/timezone
+    register: timezone
+
+-   name: Copy docker-compose to remote
+    copy:
+        src: docker-compose.yml
+        dest: /tmp/docker-compose.yml
+
+-   name: Create .env config file
+    template:
+        src: env.j2
+        dest: /tmp/.env
+        mode: 0644
+
+-   name: Run docker-compose
+    shell: cd /tmp && docker-compose up -d && cd
+

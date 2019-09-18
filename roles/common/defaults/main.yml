@@ -1,0 +1,8 @@
+---
+# defaults file for common
+
+apt_packages:    
+    - curl
+    - htop
+    - rclone
+    - vim

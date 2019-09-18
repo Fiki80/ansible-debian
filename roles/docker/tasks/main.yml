@@ -1,0 +1,55 @@
+---
+# tasks file for docker
+
+-   name: Add Docker GPG key
+    apt_key: 
+        url: "{{ docker_apt_key_url }}"
+    become: true
+
+-   name: Install prerequisites
+    apt:
+        update-cache: yes
+        state: present
+        name:     
+            - apt-transport-https
+            - ca-certificates
+            - virtualenv
+            - software-properties-common
+    become: true
+
+-   name: Add Docker repository
+    apt_repository:
+        repo: "{{ docker_apt_repo }}" 
+    become: true
+
+-   name: Install Docker
+    apt:
+        update-cache: yes
+        state: present
+        name: "{{ docker_package }}"
+    become: true
+
+-   name: Check if docker-compose is present
+    stat:
+        path: /usr/local/bin/docker-compose
+    register: compose_present
+
+-   name: Install docker-compose
+    shell: curl -L "https://github.com/docker/compose/releases/download/1.24.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose && chmod +x /usr/local/bin/docker-compose
+    become: true
+    when: compose_present.stat.exists == false
+
+-   name: Get host username
+    shell: id -un
+    become: false
+    register: docker_user
+
+-   name: Add user to docker group
+    user:
+        name: "{{ docker_user.stdout }}"
+        groups: docker
+        append: yes
+    become: true
+    notify: restart docker service
+
+-   meta: flush_handlers
