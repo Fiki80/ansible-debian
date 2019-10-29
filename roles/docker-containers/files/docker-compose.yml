@@ -86,6 +86,24 @@ services:
             - "3306:3306"
         restart: unless-stopped
 
+    pyload:
+        image: linuxserver/pyload
+        container_name: pyload
+        hostname: pyload
+        networks:
+            - proxy0
+        environment:
+          - PUID=${PUID}
+          - PGID=${PGID}
+          - TZ=${TZ}
+        volumes:
+          - ${CONFIG}/pyload:/config
+          - ${DOWNLOADS}:/downloads
+        ports:
+          - 8000:8000
+          - 7227:7227 #optional
+        restart: unless-stopped
+
 networks:
     proxy0:
         ipam:

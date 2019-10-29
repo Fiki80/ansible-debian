@@ -1,2 +1,7 @@
 ---
-# defaults file for nfs
+
+nfs_packages:
+    - nfs-kernel-server
+    - nfs-common
+
+nfs_exports: []
